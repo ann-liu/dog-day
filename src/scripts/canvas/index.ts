@@ -1,4 +1,5 @@
 import { Animator } from "../animator";
+import { Scroller } from "../scroller";
 
 interface PathData {
   path: string;
@@ -31,30 +32,25 @@ export class ObjectsCanvas {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private objects: CanvasObject[];
-  private offsetX: number = 0;
-  private velocityX: number = 0;
+  private scroller: Scroller;
   private dpr: number;
   private displayWidth: number;
   private displayHeight: number;
   private cycleWidth: number;
-  public scrollSpeed: number;
   private shapeCache: Map<PathShape, OffscreenCanvas> = new Map();
-  private keys: Set<string> = new Set();
   private animator = Animator.getInstance();
 
   constructor(
     canvasEl: HTMLCanvasElement,
     objects: CanvasObject[],
-    keys: Set<string>,
-    scrollSpeed: number,
+    scroller: Scroller,
     cycleWidth: number,
   ) {
     this.canvas = canvasEl;
     this.ctx = canvasEl.getContext("2d")!;
     this.objects = objects;
     this.cycleWidth = cycleWidth;
-    this.scrollSpeed = scrollSpeed;
-    this.keys = keys;
+    this.scroller = scroller;
     this.dpr = window.devicePixelRatio || 1;
     this.canvas.style.display = "block";
     this.canvas.style.width = "100%";
@@ -69,20 +65,8 @@ export class ObjectsCanvas {
     // this.startAnimation();
 
     this.animator.register(() => {
-      this.update();
       this.render();
     });
-  }
-
-  private update(): void {
-    if (this.keys.has("ArrowLeft")) {
-      this.velocityX = -this.scrollSpeed;
-    } else if (this.keys.has("ArrowRight")) {
-      this.velocityX = this.scrollSpeed;
-    } else {
-      this.velocityX = 0;
-    }
-    this.offsetX += this.velocityX;
   }
 
   private renderOffscreen(): void {
@@ -126,7 +110,7 @@ export class ObjectsCanvas {
 
     for (const obj of this.objects) {
       const baseX = obj.x * this.displayWidth;
-      const visualX = baseX - this.offsetX * obj.speed;
+      const visualX = baseX - this.scroller.scrollX * obj.speed;
       const objY = obj.y * this.displayHeight;
 
       // calc cycle indices that could be visible in viewport
@@ -186,10 +170,6 @@ export class ObjectsCanvas {
         ctx.stroke(path);
       }
     }
-  }
-
-  move(direction: -1 | 1): void {
-    this.velocityX = direction * this.scrollSpeed;
   }
 
   resize(): void {

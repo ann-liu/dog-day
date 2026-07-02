@@ -1,4 +1,5 @@
 import { Animator } from "./animator";
+import { Scroller } from "./scroller";
 
 type BackgroundElement = {
   el: HTMLElement;
@@ -16,26 +17,22 @@ export type { BackgroundElement };
 export class Background {
   private container: HTMLElement;
   private elements: BackgroundElement[] = [];
-  private scrollX = 0;
   private width: number;
 
-  private keys: Set<string>;
-  private scrollSpeed: number;
+  private scroller: Scroller;
   private cycleWidth: number;
   private edge: number;
   private animator = Animator.getInstance();
 
   constructor(
     svgElements: HTMLElement[],
-    k: Set<string>,
-    speed: number,
+    scroller: Scroller,
     cycleWidth: number,
     container: HTMLElement,
   ) {
     this.width = container.offsetWidth;
 
-    this.keys = k;
-    this.scrollSpeed = speed;
+    this.scroller = scroller;
     this.cycleWidth = cycleWidth;
     this.edge = container.offsetWidth;
     this.container = container;
@@ -78,16 +75,14 @@ export class Background {
   }
 
   private update() {
-    if (this.keys.has("ArrowLeft")) {
-      this.scrollX += -this.scrollSpeed;
+    if (this.scroller.paused) {
+      return;
     }
-    if (this.keys.has("ArrowRight")) {
-      this.scrollX += this.scrollSpeed;
-    }
+    const scrollX = this.scroller.scrollX;
     this.elements.forEach((el) => {
       el.x += el.autoSpeed;
-      this.recycleElement(el, this.scrollX, this.cycleWidth);
-      const screenX = el.x - this.scrollX * el.speed;
+      this.recycleElement(el, scrollX, this.cycleWidth);
+      const screenX = el.x - scrollX * el.speed;
       el.el.style.transform = `translate(${screenX}px, ${el.y}px)`;
     });
   }

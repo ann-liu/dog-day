@@ -6,6 +6,7 @@ import { Background } from "./background";
 import { Character } from "./character";
 import { createColorCustomProps } from "./colors";
 import { initScreenshots } from "./screenshots";
+import { Scroller } from "./scroller";
 
 createColorCustomProps();
 
@@ -19,13 +20,14 @@ const scrollElements = Array.from(
 ) as HTMLElement[];
 const backgroundElement = document.querySelector(".background") as HTMLElement;
 
-const SPEED = 3;
+const SPEED = 2.5;
 const CYCLE_WIDTH = backgroundElement.scrollWidth * 3;
+
+const scroller = new Scroller(keys, SPEED, () => character.flipping);
 
 const background = new Background(
   scrollElements,
-  keys,
-  SPEED,
+  scroller,
   CYCLE_WIDTH,
   backgroundElement,
 );
@@ -34,8 +36,7 @@ const canvasElement = document.querySelector("canvas") as HTMLCanvasElement;
 const objectsCanvas = new ObjectsCanvas(
   canvasElement,
   objects,
-  keys,
-  SPEED,
+  scroller,
   CYCLE_WIDTH,
 );
 
@@ -46,7 +47,11 @@ initScreenshots(screenshotBtn);
 
 let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
-document.addEventListener("keydown", (e) => keys.add(e.key));
+document.addEventListener("keydown", (e) => {
+  keys.add(e.key);
+  if (e.key === "ArrowLeft") character.move(-1);
+  if (e.key === "ArrowRight") character.move(1);
+});
 document.addEventListener("keyup", (e) => keys.delete(e.key));
 document.addEventListener("wheel", (e) => {
   keys.add(e.deltaY > 0 ? "ArrowRight" : "ArrowLeft");
