@@ -1,0 +1,15 @@
+:root {
+  --icon-fill: #fff;
+  --default-border: 2px solid #333;
+  --default-easing: ease-in-out;
+
+  --size-xs: 0.5rem;
+  --size-s: calc(2 * var(--size-xs));
+  --size-m: calc(3.5 * var(--size-xs));
+
+  --opacity-dim: 0.6;
+
+  --scale-min: 0.9;
+  --scale-base: 1;
+  --scale-max: 1.1;
+}

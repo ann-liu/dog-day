@@ -1,0 +1,19 @@
+{
+  "name": "dog-day",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "rsbuild dev --open",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview"
+  },
+  "keywords": [],
+  "author": "ann liu",
+  "license": "ISC",
+  "devDependencies": {
+    "@rsbuild/core": "^2.1.2",
+    "@types/node": "^26.1.0",
+    "rsbuild-plugin-html-minifier-terser": "^1.1.5",
+    "typescript": "^6.0.3"
+  },
+  "browserslist": "defaults"
+}
